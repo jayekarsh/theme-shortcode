@@ -1,1 +1,417 @@
-# theme-shortcode
+1.put slider in different languvage code
+
+<?php $langis =  get_bloginfo('language');?>
+
+<?php if($langis == 'en-US'){?>
+<?php putRevSlider("newseng") ?> <?php } else
+ { ?><?php putRevSlider("newsch") ?><?php } ?>
+
+plugin:category images templete
+category temeplete
+
+2.subcategory data fetch  
+ <?php
+$subcategories = get_categories('&child_of=3&hide_empty'); // List subcategories of category '4' (even the ones with no posts in them)
+
+foreach ($subcategories as $subcategory) {?>
+<div class="rtimage">
+<?php  echo sprintf('<h2><a href="%s">%s</a></h2>', get_category_link($subcategory->term_id), apply_filters('get_term', $subcategory->name));
+    if (function_exists('z_taxonomy_image_url')){?> 
+	<div class="rimg"><img src="<?php echo z_taxonomy_image_url($subcategory->term_id);?>"></div></div>
+	<? }?>
+    <?php }?>
+
+
+
+plugin:post templete
+
+3.post data
+<a href="<?php the_permalink(); ?>" id="post-<? the_ID(); ?>" class="article-thumbnail col-sm-4">
+    <div class="inner-thumbnail">
+        <? the_post_thumbnail('blog_thumbnail'); ?>
+        <h3><? the_title(); ?></h3>
+        <p class="date"><? the_time('jS F Y'); ?> </p>
+        
+        <span class="fake"> View &rarr;</span>
+    </div>
+</a>
+
+4.primary menu  <?php wp_nav_menu( array( 'theme_location' => 'primary','container_class' => '') ); ?>
+5.menu code  <?php wp_nav_menu( array('menu' => 'Products','container_class' => '') ); ?>
+  <?php wp_nav_menu( array('theme_location' => 'primary','container_class' => '','items_wrap' => '<ul class="nav navbar-nav pull-right">%3$s</ul>'));?>
+
+
+6.content data
+<?php if(have_posts()) :  while(have_posts()) : the_post(); ?>
+ 
+  <?php the_content(); ?>  
+  <?php endwhile; ?>
+          <?php else : ?>
+          <?php _e("Not Found"); ?>
+          <?php endif; ?>
+
+
+7.<?php bloginfo('template_directory')?>
+8.fetch shortcode  via custonmfield  <?php echo do_shortcode("$form"); ?>
+ <?php echo do_shortcode('[contact-form-7 id="3877" title="landing form"]') ?>
+
+
+9. custom filed		
+<?php $officehour = get_post_meta( $post->ID, 'officehour', true); ?>
+<?php echo $address; ?>
+
+10. sidebar code
+<?php get_sidebar('hbox'); ?>
+
+<?php echo do_shortcode('[print_link]') ?>
+
+11. featured img code
+<?php $feat_image = wp_get_attachment_url(get_post_thumbnail_id($post->ID) );?>
+
+ <?php if($feat_image!=""){ ?> <div class="bannerimg">  <img src="<?php echo $feat_image;?>"  /></div><?php } ?>
+
+12.<?php the_permalink(); ?>
+13.<?php the_title(); ?>
+
+14. fornt page condition
+  <?php
+if(is_front_page() ) { ?>
+<style>
+.services a {
+    display: block;
+	 
+}
+
+</style>
+  <?php } else { ?>
+  <style>
+.services a {
+    display: none;
+	 }
+
+</style>
+  
+  <?php } ?>
+
+/******************add_shortcode **********************/
+
+function table_code($atts){
+	 extract( shortcode_atts( array(
+	 'grouplevel'=>"",
+	 'level1'=>"",
+	 'level2'=>""
+	 ),$atts ) );
+	 
+	 
+	 $grouplevel = explode(",",$atts['grouplevel']);
+     $level1 = explode(",",$atts['level1']);
+	 $level2 = explode(",",$atts['level2']);
+
+	  $html .='<table class="table table-responsive plantbl">
+          <thead>
+          <th>GROUND LEVEL </th>
+            </thead>
+          <tbody>';
+		  
+	  for($i=0;$i<sizeof($groundlevel);$i++){
+		  
+		  $html .='<tr>
+              <td>'.$grouplevel[$i].'</td>
+            </tr>';
+	  }
+	  $html .='</tbody>
+        </table>
+        <table class="table table-responsive plantbl">
+          <thead>
+          <th>LEVEL 1 </th>
+            </thead>
+          <tbody>';
+		  
+		for($i=0;$i<sizeof($level1);$i++){
+			$html .='<tr>
+              <td>'.$level1[$i].'</td>
+            </tr>';	  
+		}
+		$html .='</tbody>
+        </table>
+        <table class="table table-responsive plantbl">
+          <thead>
+          <th>LEVEL 2 </th>
+            </thead>
+          <tbody>';
+		  
+		for($i=0;$i<sizeof($level2);$i++){
+			$html .='<tr>
+              <td>'.$level2[$i].'</td>
+            </tr>';	  
+		}
+		$html .= '<tbody><table>';
+}
+add_shortcode( 'table', 'table_code' );
+
+
+[table grouplevel="UNIT G.01,UNIT G.02,UNIT G.03,UNIT G.04,UNIT G.05,UNIT G.06,UNIT G.07,UNIT G.08,UNIT G.09," level1="UNIT 1.01,UNIT 1.02,UNIT 1.03,UNIT 1.04,UNIT 1.05,UNIT 1.06,UNIT 1.07,UNIT 1.08,UNIT 1.09," level2="UNIT 2.01,UNIT 2.02,UNIT 2.03,UNIT 2.04,UNIT 2.05,UNIT 2.06"] 
+
+/********************* many urls of custom filed for no of link  ***************************/
+
+
+<ul>
+ <?php $nooflinks = get_post_meta( $post->ID, 'nooflinks', true ); ?>
+    <?php  $nooflinks; $srr=array(); ?>
+                <?php for($j=0;$j<$nooflinks;$j++)
+    {$srr [] = get_post_meta( $post->ID, 'link'.($j+1), true );?>
+     <?php }
+    ?>
+     <?php for($k=0;$k<count($srr);$k++){?>
+            <li>   <?php echo $srr[$k]; ?></li>
+           <?php } ?>
+      
+</ul>
+
+/********************* many urls of custom filed for slider ***************************/
+
+
+<?php $noofimages = get_post_meta( $post->ID, 'noofimages', true ); ?>
+ <?php $totalurl = get_post_meta( $post->ID, 'totalurl', true ); ?>
+
+    <?php  $noofimages; $srr=array(); ?>
+       <?php  $totalurl; $arr=array(); ?>
+
+     <?php for($a=0;$a<$totalurl;$a++)
+
+    {$arr [] = get_post_meta( $post->ID, 'imgurl'.($a+1), true );?>
+
+     <?php }
+
+    ?>
+                <?php for($j=0;$j<$noofimages;$j++)
+
+    {$srr [] = get_post_meta( $post->ID, 'image'.($j+1), true );?>
+
+     <?php }
+
+    ?>
+                
+           <?php for($k=0;$k<count($srr);$k++){?>
+
+            <div> <a href="<?php echo $arr[$k]; ?>">  <img src="<?php echo $srr[$k]; ?>" /></a><br/></div>
+
+           <?php } ?>
+
+
+
+/******************* facebook sharing **************************************/
+
+
+<?php /*?><li class="facebook shareandlike"> <a href="http://www.facebook.com/sharer.php?s=100&p[title]=<?php echo'facebook';?>&p[summary]=<?php echo rawurlencode(get_permalink());?>&p[url]=<?php echo $iframeurl;?>&p[images][0]=<?php echo $iframeurl;?>, 'sharer'"> <i class="fa fa-facebook-square"></i> <span class="text">Share This Video On Facebook</span><?php 
+
+              
+              </a> </li> */?>
+
+
+ <?php /*
+				wp_link_pages( array(
+					'before' => '<div class="page-links">' . __( 'Pages:', 'clonetemplates' ),
+					'after'  => '</div>',
+				) );
+			*/?>
+
+
+
+ /********************************** two category post -********************************************************/
+
+<?php 
+		  $newscategoryid = get_post_meta( $post->ID, 'news_cat_id', true);
+		   $eventcatid = get_post_meta( $post->ID, 'event_cat_id', true);
+   
+  query_posts('cat='.$newscategoryid.','.$eventcatid); ?>
+  <?php while (have_posts()) : the_post(); 
+  $feat_image = wp_get_attachment_url(get_post_thumbnail_id($post->ID) ); ?>
+<div class="newspage-in">
+            
+            <div class="newspage-left">
+              <?php if($feat_image!=""){ ?>
+              <div class="news-image"><a href="<?php the_permalink();?>"><img src="<?php echo $feat_image;?>" /></a></div>
+              <?php } ?>
+            </div>
+            <div class="newspage-right">
+            
+              <div class="blog-detail">
+              <div class="crigthtitle">
+              <h1><?php echo the_title(); ?></h1>
+            </div>
+                <?php the_excerpt();?>
+                
+                <div class="blog-btn"><a href="<?php the_permalink(); ?>">Read More</a></div>
+              </div>
+              
+            </div>
+          </div>
+<?php endwhile;?>
+
+ /*************************************** category post and child category post *******************************************/
+ <?php 
+   $newscategoryid = get_post_meta( $post->ID, 'News Category Id', true);
+  $args = array ( 'orderby' => 'id', 'order' => 'DESC', 'number' => 6, 'parent' => $newscategoryid );
+$categories = get_categories( $args );
+foreach ( $categories as $category ) {
+	$cat_id = $category->term_id;
+ 
+	$latest_cat_post = new WP_Query ( array ( 'posts_per_page' => -1, 'category__in' => array( $cat_id) ) );
+	if( $latest_cat_post->have_posts() ) : while( $latest_cat_post->have_posts() ) : $latest_cat_post->the_post(); ?>
+      <div class="col-md-4 col-sm-4 news-left">
+        <?php $feat_image = wp_get_attachment_url(get_post_thumbnail_id($post->ID) );?>
+        <?php if($feat_image!=""){ ?>
+        <div class="news-image"><a href="<?php the_permalink();?>"><img src="<?php echo $feat_image;?>" /></a></div>
+        <?php } ?>
+        <h6><?php echo get_cat_name( $cat_id ); ?></h6>
+        <h2><a href="<?php the_permalink();?>">
+          <?php the_title(); ?>
+          </a></h2>
+        <p>
+          <?php the_excerpt(); ?>
+        </p>
+      </div>
+      <?php 
+	endwhile; endif;
+} ?>
+
+
+
+/********************************************** diffrence betweeen two dates in wordpress (monson project home template) **********************************************/
+
+ <?php 
+	$categoryid = get_cat_ID( 'Event' );
+	$homepageid = $post->ID;
+	$args = array( 'posts_per_page' => 1, 'category' => $categoryid, 'order' => "desc" );
+	  $myposts = get_posts( $args );
+foreach ( $myposts as $post ) : setup_postdata( $post ); ?>
+      <?php
+$eventdateis = get_field('event_datetime');
+$date1 = new DateTime($eventdateis);
+$givendate = $date1->format('Y-m-d H:i:s');
+$curdate = date('Y-m-d H:i:s');
+$seconds = strtotime($givendate) - strtotime($curdate);
+$days    = floor($seconds / 86400);
+$hours   = floor(($seconds - ($days * 86400)) / 3600);
+$minutes = floor(($seconds - ($days * 86400) - ($hours * 3600))/60);
+?>
+      <!--<p>Posted on: <?php //the_field('event_datetime'); ?></p>-->
+      
+      <div class="leftside col-md-9">
+        <?php $nexteventtxt = get_post_meta( $homepageid, 'next_event_text', true);?>
+        <h1><?php echo $nexteventtxt;?>:</h1>
+        <h2><?php echo get_the_title();?> <?php echo date('D',strtotime($givendate));?>. <?php echo date('M',strtotime($givendate));?>. <?php echo date('d',strtotime($givendate));?></h2>
+      </div>
+
+
+
+/********************************************** end date diffrence ***********************************************************************************/
+
+
+   font awesome iocns  reguire plugin 
+
+  1) Font Awesome Icons
+  2.)Font Awesome 4 Menus
+
+
+
+  for logo  
+kiwi-logo-carousel      <?php  kw_sc_logo_carousel('default'); ?>
+
+
+please let me know about the feedback of the inner page.
+
+scrollbar plugin
+
+https://wordpress.org/plugins/wp-awesome-scrollbar/installation/
+
+
+<title>
+<?php wp_title( '|', true, 'right' ); ?>
+</title>
+
+
+
+subcategory post 
+ <?php $args = array ( 'orderby' => 'id', 'order' => 'DESC', 'number' => 6, 'parent' => 1 );
+$categories = get_categories( $args );
+foreach ( $categories as $category ) {
+	$cat_id = $category->term_id;
+ 
+	$latest_cat_post = new WP_Query ( array ( 'posts_per_page' => -1, 'category__in' => array( $cat_id) ) );
+	if( $latest_cat_post->have_posts() ) : while( $latest_cat_post->have_posts() ) : $latest_cat_post->the_post(); ?>
+	
+		
+        <div class="col-md-4 col-sm-4 news-left">
+        <?php $feat_image = wp_get_attachment_url(get_post_thumbnail_id($post->ID) );?>
+
+ <?php if($feat_image!=""){ ?> <div class="news-image">  <img src="<?php echo $feat_image;?>"  /></div><?php } ?>
+        	
+             <h6> <?php echo get_cat_name( $cat_id ); ?> </h6>
+            <h2><?php the_title(); ?></h2>
+            <p><?php the_excerpt(); ?></p>
+        </div>
+		<?php 
+	endwhile; endif;
+} ?>
+
+----------------------------------------------------------
+*********************** parent child date ************************
+
+     <?php $subs = new WP_Query( array( 'post_parent' =>$post->ID, 'post_type' => 'page',order =>'ASC'));
+
+  if( $subs->have_posts() ) : while( $subs->have_posts() ) : $subs->the_post(); ?>
+ <div class="lblock">
+ <?php $feat_image = wp_get_attachment_url(get_post_thumbnail_id($post->ID) );?>
+
+ <?php if($feat_image!=""){ ?> <div class="lbtop"><img src="<?php echo $feat_image;?>"  /></div><?php } ?>
+    	
+		<div class="lbmidd"><p><?php the_title(); ?></p></div>
+        <div class="lbbottom"><?php the_content(); ?></div>        
+    </div>
+   
+
+  
+
+  <?php endwhile; endif; wp_reset_postdata(); ?>
+
+
+/*/**********// end *************************/
+
+
+
+
+jQuery Categories List Widget — WordPress Plugins
+
+List category posts
+
+langauvge wise loop 
+https://wordpress.org/support/topic/plugin-polylang-showing-default-language-post-if-no-translation-is-available
+
+
+Access perss social share == for sharing plugin
+
+Hyyan WooCommerce Polylang Integration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
